@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="styles/bootstrap-reboot.css">
+    <link rel="stylesheet" href="styles/style.css">
+    <title>Controller - WebSocket Example</title>
+</head>
+
+<body>
+    <h1><a href="/">WebSocket Example</a></h1>
+    <h2>Controller</h2>
+    <div class="container">
+        <h3>Controller Name</h3>
+        <input id="name" name="name" type="text">
+        <button onclick="sendName()">SEND</button>
+        <h3>Message to Monitor</h3>
+        <input id="message" name="message" type="text">
+        <button onclick="sendMessage()">SEND</button>
+
+        <hr>
+        <div>event console</div>
+        <div id="console"></div>
+    </div>
+
+    <script src="scripts/utility.js"></script>
+    <script src="scripts/websocket-event-type.js"></script>
+    <script src="scripts/websocket-client.js"></script>
+    <script>
+        const logger = new Logger(document.getElementById('console'));
+        const socket = new WebSocketClient('controller');
+        // 接続
+        socket.addEventListener(
+            WebSocketEventType.OPENED,
+            () => {
+                logger.recieve('socket opened');
+                socket.send({});
+            }
+        );
+        // 切斷
+        socket.addEventListener(
+            WebSocketEventType.CLOSED,
+            () => logger.recieve('socket closed')
+        );
+        // 障害
+        socket.addEventListener(
+            WebSocketEventType.FAILED,
+            error => logger.recieve(`socket failed: ${error.data}`)
+        );
+        // 受信
+        socket.addEventListener(
+            WebSocketEventType.RECIEVED,
+            data => logger.recieve(`socket recieved: ${JSON.stringify(data)}`)
+        );
+
+        function sendName() {
+            const nameElement = document.getElementById('name');
+            const data = {
+                name: nameElement.value
+            };
+            socket.send(data);
+            logger.send(`data: ${JSON.stringify(data)}`);
+        }
+        function sendMessage() {
+            const nameElement = document.getElementById('name');
+            const messageElement = document.getElementById('message');
+            const data = {
+                name: nameElement.value,
+                message: messageElement.value
+            };
+            socket.send(data);
+            logger.send(`data: ${JSON.stringify(data)}`);
+            messageElement.value = '';
+        }
+    </script>
+</body>
+
+</html>
