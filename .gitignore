@@ -405,5 +405,5 @@ DerivedData/
 *.perspectivev3
 !default.perspectivev3
 
-device-event-with-angular/
-pong-game/
+src/device-event-with-angular/
+src/pong-game/
